@@ -9,3 +9,45 @@ body {
     padding: 20px;
     border-radius: 10px;
 }
+
+.centering{
+    justify-content: center;
+    padding: 30px;
+    align-items: center;
+}
+
+
+.form-card{
+    background-color: rgb(192, 154, 178);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    align-items: center;
+    justify-content: center;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.submitbutton,
+.clearbutton {
+    padding: 10px;
+    border: 2px solid maroon;
+    background-color: white;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.submitbutton {
+    color: pink;
+}
+
+.clearbutton {
+    color: hotpink;
+}
