@@ -44,16 +44,9 @@ Primary Technology Stack:
 
 Available Projects:
 <select multiple size="8">
-    <option value="1">Customer Portal Redesign</option>
-    <option value="2">Data Pipeline Migration</option>
-    <option value="3">Mobile App Enhancement</option>
-    <option value="4">Internal Analytics Dashboard</option>
-    <option value="5">API Gateway Implementation</option>
-    <option value="6">Cloud Infrastructure Setup</option>
-    <option value="7">E-commerce Platform Update</option>
-    <option value="8">Reporting System Automation</option>
-    <option value="9">Microservices Architecture Transition</option>
-    <option value="10">Customer Data Platform Integration</option>
+    {% for project in projects %}
+    <option value="{{ project[0] }}">{{ project[1] }}</option>
+    {% endfor %}
 </select>
 
 <br /><br />
