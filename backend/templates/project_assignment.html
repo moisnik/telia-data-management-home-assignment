@@ -25,20 +25,20 @@
 <br />
 <form method="POST" action="/submit">
 
-    Full Name: <input type="text" name="full_name" required>
+    Full Name: <input type="text" name="full_name" value="{{ full_name }}" required>
 
     <br /><br />
 
-    Email Address: <input type="email" name="email" required>
+    Email Address: <input type="email" name="email" value="{{ email }}" required>
 
     <br /><br />
 
     Experience Level:
     <select name="experience">
         <option value="">Select your level</option>
-        <option value="junior">Junior (0-2 years)</option>
-        <option value="mid">Mid-level (2-5 years)</option>
-        <option value="senior">Senior (5+ years)</option>
+        <option value="junior" {% if experience_level == "junior" %}selected{% endif %}>Junior (0-2 years)</option>
+        <option value="mid" {% if experience_level == "mid" %}selected{% endif %}>Mid-level (2-5 years)</option>
+        <option value="senior" {% if experience_level == "senior" %}selected{% endif %}>Senior (5+ years)</option>
     </select>
 
     <br /><br />
@@ -46,12 +46,12 @@
     Primary Technology Stack:
     <select name="technology_stack">
         <option value="">Choose one</option>
-        <option value="backend">Backend Development</option>
-        <option value="frontend">Frontend Development</option>
-        <option value="fullstack">Full-Stack Development</option>
-        <option value="data">Data Engineering</option>
-        <option value="devops">DevOps</option>
-        <option value="mobile">Mobile Development</option>
+        <option value="backend" {% if primary_technology_stack == "backend" %}selected{% endif %}>Backend Development</option>
+        <option value="frontend" {% if primary_technology_stack == "frontend" %}selected{% endif %}>Frontend Development</option>
+        <option value="fullstack" {% if primary_technology_stack == "fullstack" %}selected{% endif %}>Full-Stack Development</option>
+        <option value="data" {% if primary_technology_stack == "data" %}selected{% endif %}>Data Engineering</option>
+        <option value="devops" {% if primary_technology_stack == "devops" %}selected{% endif %}>DevOps</option>
+        <option value="mobile" {% if primary_technology_stack == "mobile" %}selected{% endif %}>Mobile Development</option>
     </select>
 
     <br /><br />
@@ -59,31 +59,31 @@
     Available Projects:
     <select multiple size="8" name="project" required>
         {% for project in projects %}
-        <option value="{{ project[0] }}">{{ project[1] }}</option>
+        <option value="{{ project[0] }}" {% if project[0]|string in session["projects"] %}selected{% endif %}>{{ project[1] }}</option>
         {% endfor %}
     </select>
 
     <br /><br />
 
     Preferred Project Duration:
-    <input type="radio" name="duration" value="short"> Short-term (1-3 months)
-    <input type="radio" name="duration" value="medium"> Medium-term (3-6 months)
-    <input type="radio" name="duration" value="long"> Long-term (6+ months)
+    <input type="radio" name="duration" value="short" {% if preferred_duration == "short" %}checked{% endif %}> Short-term (1-3 months)
+    <input type="radio" name="duration" value="medium" {% if preferred_duration == "medium" %}checked{% endif %}> Medium-term (3-6 months)
+    <input type="radio" name="duration" value="long" {% if preferred_duration == "long" %}checked{% endif %}> Long-term (6+ months)
 
     <br /><br />
 
     Additional Skills (optional):
-    <input type="text" name="skills" placeholder="e.g., Python, Docker, React">
+    <input type="text" name="skills" placeholder="e.g., Python, Docker, React" value="{{ skills }}">
 
     <br /><br />
 
-    <input type="checkbox" name="availability"> I confirm my availability for the selected projects
+    <input type="checkbox" name="availability" {% if availability %}checked{% endif %}> I confirm my availability for the selected projects
 
     <br /><br />
 
     <div class="buttons">
     <input type="submit" class="submitbutton" value="Save Profile">
-    <input type="reset" class="clearbutton" value="Clear Form">
+    <a href="/clear" class="clearbutton">Clear form</a> 
     </div>
 </form>
 </div>

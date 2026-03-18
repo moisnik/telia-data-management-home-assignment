@@ -41,7 +41,9 @@ body {
     background-color: white;
     border-radius: 8px;
     font-weight: bold;
-    cursor: pointer;
+    cursor: pointer;      
+    text-decoration: none;    
+    line-height: 16px;
 }
 
 .submitbutton {

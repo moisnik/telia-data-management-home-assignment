@@ -1,8 +1,10 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, session
 import psycopg2
 import re
 
 app = Flask(__name__)
+
+app.secret_key = "key_for_test_assignment"
 
 DB_CONFIG = {
     "host": "localhost",
@@ -26,6 +28,24 @@ def getprojects():
 
     return projects
 
+
+def getskills(email):
+    connection = psycopg2.connect(**DB_CONFIG)
+    cursor = connection.cursor()
+
+    cursor.execute("""
+                   SELECT skills.skill FROM skills
+                   JOIN employee_skills ON skills.skill = employee_skills.skill
+                   JOIN employees ON employees.id = employee_skills.employee_id
+                   WHERE employees.id = %s;""", (email,))
+    skills = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return skills
+
+
 def validate(full_name, email, projects):
     """ Function to validate the user's input:
         check if they inserted at least 2 names, a valid email address and selected at least one project.
@@ -44,6 +64,7 @@ def validate(full_name, email, projects):
 
     return errors
 
+
 def check_profile(email):
     """ Check if the person who submitted the form is already in the database.
         Use email since it is a unique value."""
@@ -61,6 +82,7 @@ def check_profile(email):
 
     return False
 
+
 def update_skills(skills):
     """ Use the submitted list of skills to update the table.
         Skills are unique - if it is alreay in the database, do nothing."""
@@ -77,6 +99,7 @@ def update_skills(skills):
     connection.commit()
     cursor.close()
     connection.close()
+
 
 def update_data(full_name, email, projects, experience_level, primary_technology_stack, preferred_duration, availability, skills):
     """ If the person is already in the database, update their data.
@@ -107,23 +130,25 @@ def update_data(full_name, email, projects, experience_level, primary_technology
                        INSERT INTO employee_projects (employee_id, project_id)
                        VALUES (%s, %s)
                        """, (employee_id, project_id))
-        
-    for skill in skills:
-        cursor.execute("""
-                       SELECT * FROM employee_skills 
-                       WHERE employee_id = %s AND skill = %s 
-                       """, (employee_id, skill))
-        
-        if cursor.fetchone():
-            continue
 
-        cursor.execute("""
-                       INSERT INTO employee_skills (employee_id, skill)
-                       VALUES (%s, %s)
-                       """, (employee_id, skill))
+    if skills:   
+        for skill in skills:
+            cursor.execute("""
+                        SELECT * FROM employee_skills 
+                        WHERE employee_id = %s AND skill = %s 
+                        """, (employee_id, skill))
+            
+            if cursor.fetchone():
+                continue
+
+            cursor.execute("""
+                        INSERT INTO employee_skills (employee_id, skill)
+                        VALUES (%s, %s)
+                        """, (employee_id, skill))
     connection.commit()
     cursor.close()
     connection.close()
+
 
 def insert_data(full_name, email, projects, experience_level, primary_technology_stack, preferred_duration, availability, skills):
     """ If the person is not already in the database, insert their data.
@@ -145,11 +170,12 @@ def insert_data(full_name, email, projects, experience_level, primary_technology
                        VALUES (%s, %s)
                        """, (employee_id, project_id))
         
-    for skill in skills:
-        cursor.execute("""
-                       INSERT INTO employee_skills (employee_id, skill)
-                       VALUES (%s, %s)
-                       """, (employee_id, skill))
+    if skills:
+        for skill in skills:
+            cursor.execute("""
+                        INSERT INTO employee_skills (employee_id, skill)
+                        VALUES (%s, %s)
+                        """, (employee_id, skill))
     connection.commit()
     cursor.close()
     connection.close()
@@ -164,13 +190,36 @@ def clean_skills(skills):
 
 @app.route("/")
 def index():
+    """ Function to display the form:
+        If there are already values within this session, display this data, otherwise, blank form."""
+    if "full_name" in session:
+        full_name = session['full_name']
+        email = session['email']
+        experience_level = session['experience_level']
+        primary_technology_stack = session['primary_technology_stack']
+        preferred_duration = session['preferred_duration']
+        availability = session['availability']
+        skills = session["skills"]
+    else:
+        full_name = email = experience_level = primary_technology_stack = preferred_duration = availability = skills = ""    
+
     projects = getprojects()
-    return render_template("project_assignment.html", projects=projects)
+    return render_template("project_assignment.html", 
+                           full_name=full_name,
+                           email=email,
+                           projects=projects,
+                           experience_level=experience_level,
+                           primary_technology_stack=primary_technology_stack,
+                           preferred_duration=preferred_duration,
+                           skills=skills,
+                           availability=availability)
+
 
 @app.route("/submit", methods=["POST"])
 def submit():
     """ Function to handle form submissions:
-        extract information, validate name, email and projects, update database or add a new employee."""
+        extract information, validate name, email and projects, update database or add a new employee.
+        Add input values to session for saving the form."""
     full_name = request.form.get("full_name", "").strip()
     email = request.form.get("email", "").strip()
     projects = request.form.getlist("project")
@@ -187,6 +236,15 @@ def submit():
     skills = request.form.get("skills", "") or None
     availability = "availability" in request.form
 
+    session["full_name"] = full_name
+    session["email"] = email
+    session["projects"] = projects
+    session["experience_level"] = experience_level
+    session["primary_technology_stack"] = primary_technology_stack
+    session["preferred_duration"] = preferred_duration
+    session["skills"] = skills
+    session["availability"] = availability
+
     if skills:
         skills = clean_skills(skills)
         update_skills(skills)
@@ -197,6 +255,11 @@ def submit():
     else: 
         insert_data(full_name, email, projects, experience_level, primary_technology_stack, preferred_duration, availability, skills)
 
+    return redirect("/")
+
+@app.route("/clear")
+def clear_session():
+    session.clear()
     return redirect("/")
 
 if __name__ == "__main__":
