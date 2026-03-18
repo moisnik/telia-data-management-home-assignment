@@ -8,10 +8,10 @@ app.secret_key = "key_for_test_assignment"
 
 DB_CONFIG = {
     "host": "localhost",
-    "dbname": "projects",
-    "user": "postgres",
+    "dbname": input("enter database name (default:projects): ") or "projects",
+    "user": input("enter username (default:postgres): ") or "postgres",
     "password": input("enter password:"),
-    "port": "5433"
+    "port": input("enter port number (default:5433): ") or "5433"
 }
 
 def getprojects():
@@ -193,12 +193,12 @@ def index():
     """ Function to display the form:
         If there are already values within this session, display this data, otherwise, blank form."""
     if "full_name" in session:
-        full_name = session['full_name']
-        email = session['email']
-        experience_level = session['experience_level']
-        primary_technology_stack = session['primary_technology_stack']
-        preferred_duration = session['preferred_duration']
-        availability = session['availability']
+        full_name = session["full_name"]
+        email = session["email"]
+        experience_level = session["experience_level"]
+        primary_technology_stack = session["primary_technology_stack"]
+        preferred_duration = session["preferred_duration"]
+        availability = session["availability"]
         skills = session["skills"]
     else:
         full_name = email = experience_level = primary_technology_stack = preferred_duration = availability = skills = ""    
