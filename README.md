@@ -18,4 +18,4 @@ Most of the fields are optional; full name, email and project selection is requi
 If a person submits theis form, session is used to save the data in the form. Clearing the form will clear the session. 
 
 ## Help and use of AI
-In creating this project I got help from various resources including official documentation (Flask, PostgreSQL), other internet sources (eg. w3schools, StackOverflow) and AI (ChatGPT). Since this was my first time creating a web application using Flask framework, ChatGPT helped mainly with establishing the connection between backend and frontend, creating the logic of data flow and session management.
+In creating this project I got help from various resources including official documentation (Flask, PostgreSQL), other internet sources (e.g. w3schools, StackOverflow) and AI (ChatGPT). Since this was my first time creating a web application using Flask framework, ChatGPT helped mainly with establishing the connection between backend and frontend, creating the logic of data flow and session management.
